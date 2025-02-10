@@ -1,0 +1,10 @@
+project_slug: "n2v"
+project_url: "https://github.com/CAREamics/careamics"
+serverkit_repo_url: "https://github.com/Imaging-Server-Kit/serverkit-n2v"
+serverkit_author: "EPFL Center for Imaging"
+project_name: "Noise2Void"
+description: "Learning Denoising from Single Noisy Images"
+used_for:
+  - "Denoising"
+tags:
+  - "Deep learning"
