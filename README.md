@@ -3,8 +3,6 @@
 
 Implementation of a web server for [Noise2Void](https://github.com/CAREamics/careamics).
 
-Author: EPFL Center for Imaging
-
 ## Installing the algorithm server with `pip`
 
 Install dependencies:
