@@ -2,6 +2,7 @@
 Algorithm server definition.
 Documentation: https://github.com/Imaging-Server-Kit/cookiecutter-serverkit
 """
+
 from typing import List, Type
 from pathlib import Path
 import numpy as np
@@ -15,8 +16,10 @@ import shutil
 from careamics import CAREamist
 from careamics.config import create_n2v_configuration
 
+
 class Parameters(BaseModel):
     """Defines the algorithm parameters"""
+
     image: str = Field(
         ...,
         title="Image",
@@ -31,7 +34,7 @@ class Parameters(BaseModel):
         ge=1,  # Greater or equal to
         le=1000,  # Lower or equal to
         json_schema_extra={
-            "widget_type": "int", 
+            "widget_type": "int",
             "step": 1,  # The incremental step to use in the widget (only applicable to numbers)
         },
     )
@@ -43,7 +46,7 @@ class Parameters(BaseModel):
         ge=3,  # Greater or equal to
         le=1024,  # Lower or equal to
         json_schema_extra={
-            "widget_type": "int", 
+            "widget_type": "int",
             "step": 1,  # The incremental step to use in the widget (only applicable to numbers)
         },
     )
@@ -55,7 +58,7 @@ class Parameters(BaseModel):
         ge=1,  # Greater or equal to
         le=1024,  # Lower or equal to
         json_schema_extra={
-            "widget_type": "int", 
+            "widget_type": "int",
             "step": 1,  # The incremental step to use in the widget (only applicable to numbers)
         },
     )
@@ -67,21 +70,17 @@ class Parameters(BaseModel):
             raise ValueError("Array has the wrong dimensionality.")
         return image_array
 
-class Server(serverkit.Server):
+
+class N2VServer(serverkit.AlgorithmServer):
     def __init__(
         self,
-        algorithm_name: str="n2v",
-        parameters_model: Type[BaseModel]=Parameters
+        algorithm_name: str = "n2v",
+        parameters_model: Type[BaseModel] = Parameters,
     ):
         super().__init__(algorithm_name, parameters_model)
 
     def run_algorithm(
-        self,
-        image: np.ndarray,
-        epochs: int,
-        patch_size: int,
-        batch_size: int,
-        **kwargs
+        self, image: np.ndarray, epochs: int, patch_size: int, batch_size: int, **kwargs
     ) -> List[tuple]:
         """Runs the algorithm."""
         image_ndim = len(image.shape)
@@ -118,7 +117,7 @@ class Server(serverkit.Server):
         # Not sure how to prevent any logging and checkpoints saving, so for now we just remove the directories created by n2v...
         shutil.rmtree(Path(__file__).parent / "csv_logs")
         shutil.rmtree(Path(__file__).parent / "checkpoints")
-        
+
         return [(prediction, {"name": "Denoised"}, "image")]
 
     def load_sample_images(self) -> List["np.ndarray"]:
@@ -127,8 +126,9 @@ class Server(serverkit.Server):
         images = [skimage.io.imread(image_path) for image_path in image_dir.glob("*")]
         return images
 
-server = Server()
+
+server = N2VServer()
 app = server.app
 
-if __name__=='__main__':
+if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8000)
